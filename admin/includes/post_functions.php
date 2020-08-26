@@ -62,9 +62,7 @@ function createPost($request_values)
         $published = $request_values['publish'];
     }
     $post_slug = makeSlug($title);
-    if (empty($title)) { array_push($errors, "Post title is required"); }
-    if (empty($body)) { array_push($errors, "Post body is required"); }
-    if (empty($topic_id)) { array_push($errors, "Post topic is required"); }
+    $errors = errorHandlingPostCreate($request_values);
     $featured_image = $_FILES['featured_image']['name'];
     if (empty($featured_image)) { array_push($errors, "Featured image is required"); }
     $target = "../static/images/" . basename($featured_image);
@@ -75,12 +73,12 @@ function createPost($request_values)
     $result = $conn->prepare($post_check_query);
     $resultrow = $result->fetchColumn();
 
-    if ($resultrow > 0) { // if post exists
+    if ($resultrow > 0) {
         array_push($errors, "A post already exists with that title.");
     }
     if (count($errors) == 0) {
         $query = "INSERT INTO posts (user_id, title, slug, image, body, published, created_at, updated_at) VALUES('$userId', '$title', '$post_slug', '$featured_image', '$body', $published, now(), now())";
-        if($conn->query($query)){ // if post created successfully
+        if($conn->query($query)){
             $inserted_post_id = $conn->lastInsertId();
             $sql = "INSERT INTO post_topic (post_id, topic_id) VALUES($inserted_post_id, $topic_id)";
             $conn->query($sql);
@@ -93,7 +91,7 @@ function createPost($request_values)
 }
 function editPost($id)
 {
-    global $conn, $title, $post_slug, $body, $published, $isEditingPost, $post_id;
+    global $conn;
     $sql = "SELECT * FROM posts WHERE id=$id LIMIT 1";
     $stmt = $conn->query($sql);
     return $stmt->fetch();
@@ -112,8 +110,8 @@ function updatePost($request_values)
     }
     $post_slug = makeSlug($title);
 
-    if (empty($title)) { array_push($errors, "Post title is required"); }
-    if (empty($body)) { array_push($errors, "Post body is required"); }
+    $errors = errorHandlingPostCreate($request_values);
+
 
         $featured_image = $_FILES['featured_image']['name'];
         $target = "../static/images/" . basename($featured_image);
@@ -134,6 +132,19 @@ function updatePost($request_values)
             }
         }
     }
+}
+function errorHandlingPostCreate($params)
+{
+    $errors = [];
+
+    if (empty($params['title'])) {
+        $errors[] = "Post title is required";
+    }
+    if (empty($params['body'])) {
+        $errors[] = "Post body is required";
+    }
+
+    return $errors;
 }
 function deletePost($post_id)
 {

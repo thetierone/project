@@ -3,14 +3,11 @@
 <?php  include(ROOT_PATH . '/admin/includes/post_functions.php'); ?>
 <?php include(ROOT_PATH . '/admin/includes/head_section.php'); ?>
 
-<!-- Get all admin posts from DB -->
 <?php $posts = getAllPosts(); ?>
 <title>Admin | Manage Posts</title>
 </head>
 <body>
-<!-- admin navbar -->
 <?php include(ROOT_PATH . '/admin/includes/navbar.php') ?>
-
 <div class="container content">
     <?php include(ROOT_PATH . '/admin/includes/menu.php') ?>
 
@@ -22,7 +19,7 @@
         <?php else: ?>
             <table class="table">
                 <thead>
-                <th>N</th>
+                <th>ID</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Views</th>

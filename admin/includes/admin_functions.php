@@ -125,7 +125,6 @@ function getAdminUsers()
     $stmt = $conn->query($sql);
     return $stmt->fetchAll();
 }
-
 function makeSlug(string $string)
 {
     $string = strtolower($string);
