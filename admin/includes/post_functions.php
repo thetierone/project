@@ -13,21 +13,49 @@ function getAllPosts()
 {
     global $conn;
     if ($_SESSION['user']['role'] == "Admin") {
-        $sql = "SELECT p.*, u.username as username FROM posts p LEFT JOIN users u on u.id = p.user_id";
+        $sql = "
+           SELECT p.*, 
+           u.username AS username, 
+           t.name     AS topic 
+           FROM   posts p 
+                   LEFT JOIN users u 
+                          ON u.id = p.user_id 
+                   LEFT JOIN post_topic pt 
+                          ON pt.post_id = p.id 
+                   LEFT JOIN topics t 
+                          ON t.id = pt.topic_id 
+        ";
     } elseif ($_SESSION['user']['role'] == "Author") {
-
         $user_id = $_SESSION['user']['id'];
-        $sql = "SELECT p.*, u.username as username FROM posts p LEFT JOIN users u on u.id = p.user_id WHERE p.user_id=$user_id AND p.published = 1";
+        $sql = "
+            SELECT p.*, 
+            u.username AS username, 
+            t.name     AS topic 
+            FROM   posts p 
+                   LEFT JOIN users u 
+                          ON u.id = p.user_id 
+                   LEFT JOIN post_topic pt 
+                          ON pt.post_id = p.id 
+                   LEFT JOIN topics t 
+                          ON t.id = pt.topic_id 
+            WHERE  p.user_id = :user_id 
+                   AND p.published = 1 
+        ";
     }
-    $stmt = $conn->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam('user_id',$user_id);
+    $stmt->execute();
 
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 function getPostAuthorById($user_id)
 {
     global $conn;
-    $sql = "SELECT username FROM users WHERE id=$user_id";
-    $stmt = $conn->query($sql);
+    $sql = "SELECT username FROM users WHERE id=:user_id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam('user_id',$user_id);
+    $stmt->execute();
     $result = $stmt->fetchAll();
     if ($result) {
         return $result['username'];
@@ -35,7 +63,10 @@ function getPostAuthorById($user_id)
         return null;
     }
 }
-if (isset($_POST['create_post'])) { createPost($_POST); }
+
+if (isset($_POST['create_post'])) {
+    createPost($_POST);
+}
 if (isset($_GET['edit-post'])) {
     $isEditingPost = true;
     $post_id = $_GET['edit-post'];
@@ -64,7 +95,9 @@ function createPost($request_values)
     $post_slug = makeSlug($title);
     $errors = errorHandlingPostCreate($request_values);
     $featured_image = $_FILES['featured_image']['name'];
-    if (empty($featured_image)) { array_push($errors, "Featured image is required"); }
+    if (empty($featured_image)) {
+        array_push($errors, "Featured image is required");
+    }
     $target = "../static/images/" . basename($featured_image);
     if (!move_uploaded_file($_FILES['featured_image']['tmp_name'], $target)) {
         array_push($errors, "Failed to upload image. Please check file settings for your server");
@@ -78,7 +111,7 @@ function createPost($request_values)
     }
     if (count($errors) == 0) {
         $query = "INSERT INTO posts (user_id, title, slug, image, body, published, created_at, updated_at) VALUES('$userId', '$title', '$post_slug', '$featured_image', '$body', $published, now(), now())";
-        if($conn->query($query)){
+        if ($conn->query($query)) {
             $inserted_post_id = $conn->lastInsertId();
             $sql = "INSERT INTO post_topic (post_id, topic_id) VALUES($inserted_post_id, $topic_id)";
             $conn->query($sql);
@@ -89,6 +122,7 @@ function createPost($request_values)
         }
     }
 }
+
 function editPost($id)
 {
     global $conn;
@@ -113,15 +147,15 @@ function updatePost($request_values)
     $errors = errorHandlingPostCreate($request_values);
 
 
-        $featured_image = $_FILES['featured_image']['name'];
-        $target = "../static/images/" . basename($featured_image);
-        if (!move_uploaded_file($_FILES['featured_image']['tmp_name'], $target)) {
-            array_push($errors, "Failed to upload image. Please check file settings for your server");
-        }
+    $featured_image = $_FILES['featured_image']['name'];
+    $target = "../static/images/" . basename($featured_image);
+    if (!move_uploaded_file($_FILES['featured_image']['tmp_name'], $target)) {
+        array_push($errors, "Failed to upload image. Please check file settings for your server");
+    }
 
     if (count($errors) == 0) {
         $query = "UPDATE posts SET title='$title', slug='$post_slug', views=0, image='$featured_image', body='$body', published=$published, updated_at=now() WHERE id=$post_id";
-        if($conn->query($query)){
+        if ($conn->query($query)) {
             if (isset($topic_id)) {
                 $inserted_post_id = $conn->lastInsertId();;
                 $sql = "INSERT INTO post_topic (post_id, topic_id) VALUES($inserted_post_id, $topic_id)";
@@ -133,6 +167,7 @@ function updatePost($request_values)
         }
     }
 }
+
 function errorHandlingPostCreate($params)
 {
     $errors = [];
@@ -146,6 +181,7 @@ function errorHandlingPostCreate($params)
 
     return $errors;
 }
+
 function deletePost($post_id)
 {
     global $conn;
@@ -156,6 +192,7 @@ function deletePost($post_id)
         exit(0);
     }
 }
+
 if (isset($_GET['publish']) || isset($_GET['unpublish'])) {
     $param = $_GET['param'];
     $message = "";
@@ -185,4 +222,5 @@ function togglePublishPost($post_id, $param, $message)
     } catch (Exception $exception) {
     }
 }
+
 ?>

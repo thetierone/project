@@ -94,7 +94,7 @@ if (isset($_POST['login_btn'])) {
 
             if (in_array($_SESSION['user']['role'], ["Admin", "Author"])) {
                 $_SESSION['message'] = "You are now logged in";
-                header('location: ' . BASE_URL . '/admin/dashboard.php');
+                header('location: ' . BASE_URL . 'index.php');
                 exit(0);
             } else {
                 $_SESSION['message'] = "You are now logged in";

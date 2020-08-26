@@ -1,7 +1,13 @@
-<?php if (isset($_SESSION['user']['username'])) { ?>
+<?php include(ROOT_PATH . '/includes/messages.php') ?>
+<?php if (isset($_SESSION['user']['role'])) { ?>
     <div class="logged_in_info">
-        <span>welcome <?php echo $_SESSION['user']['username'] ?></span>
-        |
+        <span>Welcome <?php echo $_SESSION['user']['username'] ?></span>
+        | <?php if ($_SESSION['user']['role'] === 'Admin'): ?>
+        <span><a href="admin/dashboard.php">Admin dashboard</a></span>
+        | <?php endif; ?>
+        | <?php if ($_SESSION['user']['role'] === 'Author'): ?>
+            <span><a href="admin/posts.php">Manage posts</a></span>
+            | <?php endif; ?>
         <span><a href="logout.php">logout</a></span>
     </div>
 <?php } else { ?>

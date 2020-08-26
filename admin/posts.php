@@ -20,6 +20,7 @@
             <table class="table">
                 <thead>
                 <th>ID</th>
+                <th>Category</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Views</th>
@@ -33,6 +34,7 @@
                 <?php foreach ($posts as $key => $post): ?>
                     <tr>
                         <td><?php echo $key + 1; ?></td>
+                        <td><?php echo $post['topic']; ?></td>
                         <td>
                             <a 	target="_blank"
                                   href="<?php echo BASE_URL . 'single_post.php?post-slug=' . $post['slug'] ?>">

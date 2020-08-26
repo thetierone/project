@@ -15,7 +15,7 @@ function getPosts()
     $sql = "SELECT * FROM posts WHERE published=true";
     $stmt = $conn->prepare($sql);
     $stmt->execute();
-    $result = $stmt->fetchAll();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     return getTopic($result);
 }
@@ -30,7 +30,7 @@ function getPostTopic($post_id)
     $stmt->bindParam(':post_id', $post_id);
     $stmt->execute();
 
-    return $stmt->fetch();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function getPublishedPostsByTopic($topic_id)
@@ -110,7 +110,7 @@ function getTopic($posts)
 {
     $final_posts = [];
     foreach ($posts as $post) {
-        $post['topics'] = getPostTopic($post['id']);
+        $post['topic'] = getPostTopic($post['id']);
         $final_posts[] = $post;
     }
 
