@@ -13,12 +13,11 @@
 <?php } else { ?>
     <div class="banner">
         <div class="welcome_msg">
-            <h1>Welcome to my blog!</h1>
+            <h1>Choose the car you like:</h1>
             <p>
-                Here you can find posts<br>
-                On various topics<br>
-                That will brighten your day<br>
-                <span>~ Tomas</span>
+                <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=13"><span>Audi</span></a> <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=18"><span>Toyota</span></a><br>
+                <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=14"><span>BMW</span></a> <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=17"><span>Volkswagen</span></a><br>
+                <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=15"><span>Mercedes-Benz</span></a> <a href="http://www.tomas.lt:8008/filtered_posts.php?topic=16"><span>Volvo</span></a><br>
             </p>
             <a href="register.php" class="btn">Register</a>
         </div>

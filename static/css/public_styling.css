@@ -49,7 +49,7 @@ form input:focus {
 .navbar {
     margin: 0 auto;
     overflow: hidden;
-    background-color: #3E606F;
+    background-color: #6c7989;
     border-radius: 0px 0px 6px 6px;
 }
 .navbar ul {
@@ -97,10 +97,10 @@ form input:focus {
 }
 .banner {
     margin: 5px auto;
-    min-height: 400px;
+    min-height: 425px;
     color: white;
     border-radius: 5px;
-    background-image: url('../images/banner.jpeg');
+    background-image: url('../images/rsz_volvobg.jpg');
     background-size: 100% 100%;
 }
 .banner .welcome_msg {
@@ -132,7 +132,7 @@ form input:focus {
     text-decoration: none;
 }
 .banner .welcome_msg a:hover {
-    background: #374447;
+    background: #b9c3cd;
 }
 .banner .login_div {
     width: 50%;
